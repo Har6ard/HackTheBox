@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+"""
+A simple Base64 encoder/decoder script.
+Options
+
+-h      Shows the options for the script
+-s      Accepts a single word without quotations or multiple words wrapped with " "
+-o      Either encode or decode
+-i      Number of iterations of encoding you want applied or decoding.
+-v      Verbose mode to see the result of each iteration of encoding or decoding.
+
+Example usage of encoding: python3 EncDec.py -s "Encode my string" -o encode -i 5 -v True
+Example usage of decoding: python3 EncDec.py -s UTJoeWFYTT0= -o decode -i 5 -v True
+
+
+"""
+
+import argparse
+import os
+import sys
+import base64
+print('\n' * 2)
+print('************************************************************************************************************')
+print('\n')
+print('                                       Base64 Encoder/Decoder')
+print('\n')
+print('************************************************************************************************************')
+print('\n' * 2)
+
+parser = argparse.ArgumentParser(description='Encode or decode a string in Base64',
+                                 epilog='Thanks for using my program!')
+
+parser.add_argument('-s', '--string', help='Enter a string to be encoded or decoded')
+parser.add_argument('-o', '--operation', type=str, help='Enter "encode" or "decode" ')
+parser.add_argument('-i', '--iterations', type=int, help='Amount of iterations to apply. Default is one.', default=1)
+parser.add_argument('-v', '--verbose', type=bool, help='To see output after each iteration, use True. Otherwise, '
+                                                       'default is false.', default=False)
+args = parser.parse_args()  # Collects arguments
+
+
+if not args.string:
+    print('Please supply a string for encoding or decoding')
+    print('Example: python EncDec.py -s "my string"')
+    sys.exit(0)
+if not args.operation:
+    print('Please identify either encoding or decoding')
+    print('Example: python EncDec.py -s "my string" -o encode')
+    sys.exit(0)
+
+iteration_count = 1
+if args.operation == 'encode':
+    print('Encoding: ' + args.string + ' with ' + str(args.iterations) + ' iterations of Base64 encoding')
+    while args.iterations > 0:
+        encodedBytes = base64.b64encode(args.string.encode("utf-8"))
+        encodedStr = str(encodedBytes, "utf-8")
+        args.string = encodedStr
+        args.iterations -= 1
+        if args.verbose is True:
+            print('Iteration of encoding: ' + str(iteration_count))
+            iteration_count +=1
+            print(args.string)
+    print('\nFINAL OUTPUT: ' + args.string)
+
+
+elif args.operation == 'decode':
+    print('\nDecoding ' + args.string + ' with ' + str(args.iterations) + ' iterations of Base64 decoding')
+    while args.iterations > 0:
+        try:
+            decodedBytes = base64.urlsafe_b64decode(args.string)
+            decodedStr = str(decodedBytes, "utf-8")
+            args.string = decodedStr
+            args.iterations -= 1
+            if args.verbose is True:
+                print('Iteration of decoding: ' + str(iteration_count))
+                iteration_count += 1
+                print(args.string)
+        except Exception as e:
+            print('Exiting early do to plain text being detected')
+            break
+
+    print('\nFINAL OUTPUT: ' + args.string)
+else:
+    print('Please check your operation and ensure that it\'s either encode or decode')
+

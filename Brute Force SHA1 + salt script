@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+import hashlib
+
+fname = "/usr/share/wordlists/rockyou.txt" # Change file path to desired wordlist
+with open(fname, 'r', errors='replace') as f:
+    content = f.readlines()
+    word1 = [x.strip() for x in content] 
+wordlist = word1
+
+for word in wordlist:
+	salted = word + 'Your salt'  # Add your captured salt here
+	encoded_hash = hashlib.sha1(salted.encode())
+	result = encoded_hash.hexdigest()
+  print('Trying word: ' + word)
+	print('Encoded hash: ' + result)
+	if result == 'captured hashed password':  # Enter in captured hashed password for comparison
+		print('Password found!')
+		print('Password = ' + word)
+		break
+	else:
+		pass
+
+print('Task Complete. No Passwords found')

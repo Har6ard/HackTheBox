@@ -1,0 +1,14 @@
+#!/usr/bin/python3
+"""
+This fuzzing script was used on a bin file that accepted a file path for an argument. Adjust it to your purposes. 
+"""
+
+import os
+fuzz_letter = 'A'
+fuzz_counter = 100
+
+while fuzz_counter < 10000:
+    fuzz_package = fuzz_letter*fuzz_counter
+    print('Sending: ' + str(len(fuzz_package)) + ' bytes')
+    os.system("/home/user/Desktop/readfile " + fuzz_package)
+    fuzz_counter += 200

