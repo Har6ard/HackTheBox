@@ -1,0 +1,55 @@
+#!/usr/bin/python3
+"""
+Creates a custom fuzz list for files with date time stamps.
+
+
+This is not a pretty script. I needed to make something up fairly quick and this
+is what I came up with. Essentially, I learned that a backup file was being
+generated with backup_YeareMonthDayHourMinuteSecond.zip in a directory on a website
+I have no doubt there is a better tool or script for this, but I'm putting it
+up here anyway. 
+
+After you generate fuzz.txt you can plug it into any fuzzer that takes a file 
+arguement
+
+example:
+dirb http://10.10.10.10/targetDIR/ /your/path/to/fuzz.txt 
+
+"""
+
+added_minutes = []
+added_seconds = []
+final = []
+# Below I started with the year, month, day, and hour. The script then adds
+# Every minute and then 60 seconds for each minute. 
+# IMPORTANT: Remember that the backup will probably be based on the target
+# Machines time. So account for timezone differences. 
+base_dir='backup_2020092002'  # Whatever the file and date time scheme is
+
+minutes=0
+
+while minutes < 61: # Adds minutes to end up base_dir
+    if minutes < 10:
+        added_minutes.append(base_dir + '0' + str(minutes))
+    else:
+        added_minutes.append(base_dir + str(minutes))
+    minutes += 1
+
+for item in added_minutes: # Adds seconds 
+    seconds=0
+    while seconds < 61:
+        if seconds < 10:
+            added_seconds.append(item + '0' + str(seconds))
+        else:
+            added_seconds.append(item + str(seconds))
+        seconds+=1
+
+for item in added_seconds:  # Adds .zip or any file extension you want
+    final.append(item + '.zip')
+    
+
+for item in final:
+    with open('/change/to/your/path/fuzz.txt', 'a') as f_obj: # Create fuzz.txt and add the path here
+        f_obj.write('\n')
+        f_obj.write(item)
+        f_obj.close()
